@@ -31,7 +31,8 @@ h1 {
 
 input {
   min-width: 300px;
-  border-radius: 5px;
+  border-radius: 7px;
+  border: 1px solid rgb(25, 0, 255);
 }
 
 button {

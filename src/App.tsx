@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import "./App.css";
 
 interface Task {
   id: number;
@@ -63,7 +62,7 @@ function App() {
           type="text"
           value={task}
           onChange={handleInputChange}
-          placeholder="Enter task"
+          placeholder="Enter task..."
         />
         <button onClick={addTask}>{editId ? "Update" : "Add"}</button>
       </div>
