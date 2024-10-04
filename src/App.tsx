@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from "react";
+import React, { useState, useEffect } from 'react';
 import "./App.css";
 
 interface Task {
@@ -7,11 +7,23 @@ interface Task {
 }
 
 function App() {
-  const [data, setData] = useState<Task[]>([]);
+  // Инициализация состояния данными из localStorage
+  const [data, setData] = useState<Task[]>(() => {
+    const storedTasks = localStorage.getItem("tasks");
+    return storedTasks ? JSON.parse(storedTasks) : [];
+  });
+  
   const [task, setTask] = useState<string>("");
   const [editId, setEditId] = useState<number | null>(null);
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+  // Сохраняем данные в localStorage при каждом изменении data
+  useEffect(() => {
+    if (data.length > 0) {
+      localStorage.setItem("tasks", JSON.stringify(data));
+    }
+  }, [data]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask(e.target.value);
   };
 
@@ -23,11 +35,10 @@ function App() {
       setData(updated);
       setEditId(null);
     } else {
-      setData([...data, { id: Date.now(), name: task }]);
-      
+      const newTask: Task = { id: Date.now(), name: task };
+      setData([...data, newTask]);
+      setTask("");
     }
-
-    setTask("");
   };
 
   const deleteTask = (id: number) => {
