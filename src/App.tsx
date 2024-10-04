@@ -9,30 +9,40 @@ interface Task {
 function App() {
   const [data, setData] = useState<Task[]>([]);
   const [task, setTask] = useState<string>("");
-  const [editId, setEditId] = useState<number | null>(null)
+  const [editId, setEditId] = useState<number | null>(null);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     setTask(e.target.value);
   };
 
   const addTask = () => {
-    setData([...data, { id: Date.now(), name: task }]);
+    if (editId !== null) {
+      const updated = data.map((t) =>
+        t.id === editId ? { ...t, name: task } : t
+      );
+      setData(updated);
+      setEditId(null);
+    } else {
+      setData([...data, { id: Date.now(), name: task }]);
+      
+    }
+
     setTask("");
   };
 
-  const deleteTask = (id:number) => {
+  const deleteTask = (id: number) => {
     const filtered = data.filter((t) => t.id !== id);
-    setData(filtered)
-  }
+    setData(filtered);
+  };
 
-  const editTask = (id:number) => {
+  const editTask = (id: number) => {
     const toEdit = data.find((t) => t.id === id);
 
     if (toEdit) {
-      setTask(toEdit.name)
-      setEditId(id)
+      setTask(toEdit.name);
+      setEditId(id);
     }
-  }
+  };
 
   return (
     <div className="app">
@@ -44,7 +54,7 @@ function App() {
           onChange={handleInputChange}
           placeholder="Enter task"
         />
-        <button onClick={addTask}>{editId? 'Update' : 'Add'}</button>
+        <button onClick={addTask}>{editId ? "Update" : "Add"}</button>
       </div>
 
       <ul>
@@ -52,8 +62,8 @@ function App() {
           <li key={t.id}>
             {t.name}
             <div className="manage-btns">
-              <button onClick={()=> editTask(t.id)}>Edit</button>
-              <button onClick={()=> deleteTask(t.id)}>Delete</button>
+              <button onClick={() => editTask(t.id)}>Edit</button>
+              <button onClick={() => deleteTask(t.id)}>Delete</button>
             </div>
           </li>
         ))}
