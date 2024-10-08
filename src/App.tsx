@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 interface Task {
   id: number;
@@ -11,9 +11,10 @@ function App() {
     const storedTasks = localStorage.getItem("tasks");
     return storedTasks ? JSON.parse(storedTasks) : [];
   });
-  
+
   const [task, setTask] = useState<string>("");
   const [editId, setEditId] = useState<number | null>(null);
+  const [placeholder, setPlaceholder] = useState<boolean>(true)
 
   // Сохраняем данные в localStorage при каждом изменении data
   useEffect(() => {
@@ -24,19 +25,22 @@ function App() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask(e.target.value);
+    setPlaceholder(true)
   };
 
-  const addTask = () => {
+  const addTask = (task: string) => {
     if (editId !== null) {
       const updated = data.map((t) =>
         t.id === editId ? { ...t, name: task } : t
       );
       setData(updated);
       setEditId(null);
-    } else {
+    } else if (task) {
       const newTask: Task = { id: Date.now(), name: task };
       setData([...data, newTask]);
       setTask("");
+    } else {
+      setPlaceholder(false)
     }
   };
 
@@ -62,9 +66,18 @@ function App() {
           type="text"
           value={task}
           onChange={handleInputChange}
-          placeholder="Enter task..."
+          placeholder={placeholder ? 'Enter task...' : 'Enter symbols!!!'}
+          style={{ borderColor: placeholder ? '' : 'red' }}
+          onKeyUp = {(e)=>{
+            if (e.key === 'Enter') {
+              addTask(task)
+            }
+          }}
+          
         />
-        <button onClick={addTask}>{editId ? "Update" : "Add"}</button>
+        <button onClick={() => addTask(task)}>
+          {editId ? "Update" : "Add"}
+        </button>
       </div>
 
       <ul>
