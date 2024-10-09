@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Reorder } from "framer-motion";
 
 interface Task {
   id: number;
@@ -14,7 +15,7 @@ function App() {
 
   const [task, setTask] = useState<string>("");
   const [editId, setEditId] = useState<number | null>(null);
-  const [placeholder, setPlaceholder] = useState<boolean>(true)
+  const [placeholder, setPlaceholder] = useState<boolean>(true);
 
   // Сохраняем данные в localStorage при каждом изменении data
   useEffect(() => {
@@ -25,7 +26,7 @@ function App() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTask(e.target.value);
-    setPlaceholder(true)
+    setPlaceholder(true);
   };
 
   const addTask = (task: string) => {
@@ -35,12 +36,13 @@ function App() {
       );
       setData(updated);
       setEditId(null);
+      setTask("");
     } else if (task) {
       const newTask: Task = { id: Date.now(), name: task };
       setData([...data, newTask]);
       setTask("");
     } else {
-      setPlaceholder(false)
+      setPlaceholder(false);
     }
   };
 
@@ -66,23 +68,35 @@ function App() {
           type="text"
           value={task}
           onChange={handleInputChange}
-          placeholder={placeholder ? 'Enter task...' : 'Enter symbols!!!'}
-          style={{ borderColor: placeholder ? '' : 'red' }}
-          onKeyUp = {(e)=>{
-            if (e.key === 'Enter') {
-              addTask(task)
+          placeholder={placeholder ? "Enter task..." : "Enter symbols!!!"}
+          style={{ borderColor: placeholder ? "" : "red" }}
+          onKeyUp={(e) => {
+            if (e.key === "Enter") {
+              addTask(task);
+              setTask("");
             }
           }}
-          
         />
         <button onClick={() => addTask(task)}>
           {editId ? "Update" : "Add"}
         </button>
       </div>
 
-      <ul>
+      <Reorder.Group axis="y" values={data} onReorder={setData}>
+        {data.map((task) => (
+          <Reorder.Item key={task.id} value={task}>
+            {task.name}
+            <div className="manage-btns">
+              <button onClick={() => editTask(task.id)}>Edit</button>
+              <button onClick={() => deleteTask(task.id)}>Delete</button>
+            </div>
+          </Reorder.Item>
+        ))}
+      </Reorder.Group>
+
+      {/* <ul>
         {data.map((t) => (
-          <li key={t.id}>
+          <li draggable={true} key={t.id}>
             {t.name}
             <div className="manage-btns">
               <button onClick={() => editTask(t.id)}>Edit</button>
@@ -90,7 +104,7 @@ function App() {
             </div>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </div>
   );
 }
